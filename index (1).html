@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Manohar Mobiles — Incentive Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0a0f;--bg2:#13131a;--bg3:#1c1c28;--bg4:#252535;
+  --border:#2a2a3d;--border2:#3a3a52;
+  --text:#e8e8f0;--text2:#9090a8;--text3:#5a5a72;
+  --green:#22c55e;--green-bg:#0d2818;--green-border:#1a4a2a;
+  --amber:#f59e0b;--amber-bg:#2a1e05;--amber-border:#4a3510;
+  --red:#ef4444;--red-bg:#2a0a0a;--red-border:#4a1515;
+  --blue:#3b82f6;--blue-bg:#0a1628;--blue-border:#1a3050;
+  --purple:#a855f7;--purple-bg:#1a0a28;--purple-border:#3a1550;
+  --accent:#6366f1;--accent2:#818cf8;
+  --phone-color:#22c55e;--acc-color:#f59e0b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+.hidden{display:none!important}
+
+/* ── LAYOUT ── */
+.app{min-height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.logo span{color:var(--accent2)}
+.agent-badge{background:var(--bg4);border:1px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.month-select{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{background:#4f52e0}
+.btn-green{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.btn-green:hover{background:#16422a}
+.btn-amber{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber)}
+.btn-red{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.main{padding:1.5rem}
+
+/* ── LOGIN SCREEN ── */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:1rem}
+.login-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:420px}
+.login-logo{text-align:center;margin-bottom:2rem}
+.login-logo h1{font-size:26px;font-weight:700;color:var(--text)}
+.login-logo h1 span{color:var(--accent2)}
+.login-logo p{color:var(--text2);font-size:13px;margin-top:4px}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;transition:border .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.field select option{background:var(--bg3)}
+.login-submit{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;margin-top:.5rem;transition:all .15s}
+.login-submit:hover{background:#4f52e0}
+.error-msg{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:1rem}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:1.5rem}
+.tab{flex:1;padding:9px;border-radius:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);transition:all .15s;border:none;background:transparent;font-family:'DM Sans',sans-serif}
+.tab.active{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}
+.tab:hover:not(.active){color:var(--text)}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:1.5rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem}
+.stat-card .s-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.stat-card .s-val{font-size:28px;font-weight:700;font-family:'Syne',sans-serif;line-height:1}
+.stat-card .s-sub{font-size:12px;color:var(--text2);margin-top:4px}
+.green-val{color:var(--green)}
+.amber-val{color:var(--amber)}
+.blue-val{color:var(--blue)}
+.purple-val{color:var(--purple)}
+
+/* ── SLAB CARD ── */
+.slab-section{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem}
+.slab-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.25rem;position:relative;overflow:hidden}
+.slab-card.phone-slab{border-top:3px solid var(--phone-color)}
+.slab-card.acc-slab{border-top:3px solid var(--acc-color)}
+.slab-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
+.slab-type{font-size:11px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.slab-type.phone{color:var(--phone-color)}
+.slab-type.acc{color:var(--acc-color)}
+.slab-badge{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+.slab-achieved{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.slab-pending{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber)}
+.slab-none{background:var(--bg4);border:1px solid var(--border2);color:var(--text2)}
+.slab-name{font-size:22px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:4px}
+.slab-amount{font-size:14px;color:var(--text2)}
+.slab-amount span{color:var(--green);font-weight:600;font-size:18px}
+.progress-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;margin:10px 0 6px}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.fill-green{background:var(--green)}
+.fill-amber{background:var(--amber)}
+.fill-red{background:var(--red)}
+.slab-gap{font-size:12px;color:var(--text2)}
+.slab-gap strong{color:var(--amber)}
+
+/* ── CATEGORY BREAKDOWN ── */
+.breakdown-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.25rem;margin-bottom:1rem}
+.breakdown-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.breakdown-title .dot{width:8px;height:8px;border-radius:50%}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.cat-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.cat-item .c-name{font-size:11px;color:var(--text3);margin-bottom:4px}
+.cat-item .c-val{font-size:22px;font-weight:700;font-family:'Syne',sans-serif}
+.cat-item .c-target{font-size:11px;color:var(--text3);margin-top:2px}
+.cat-item.achieved{border-color:var(--green-border);background:var(--green-bg)}
+.cat-item.achieved .c-val{color:var(--green)}
+
+/* ── UPLOAD FORM ── */
+.upload-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.upload-title{font-size:16px;font-weight:600;font-family:'Syne',sans-serif;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.upload-title .badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:6px;background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue)}
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:1.25rem}
+.input-group{display:flex;flex-direction:column;gap:4px}
+.input-group label{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.input-group input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;font-family:'Syne',sans-serif;font-weight:600;text-align:center;transition:border .15s;width:100%}
+.input-group input:focus{outline:none;border-color:var(--accent)}
+.input-group input::-webkit-inner-spin-button{opacity:1}
+.submit-row{display:flex;gap:10px;align-items:center}
+.submit-btn{padding:12px 28px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;transition:all .15s}
+.submit-btn:hover{background:#4f52e0}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.today-note{font-size:12px;color:var(--text3)}
+
+/* ── DAILY LOG TABLE ── */
+.log-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1rem}
+.log-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.log-header h3{font-size:14px;font-weight:600;font-family:'Syne',sans-serif}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:var(--bg3);padding:10px 14px;text-align:left;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:10px 14px;border-top:1px solid var(--border);font-size:13px;white-space:nowrap}
+tr:hover td{background:var(--bg3)}
+.type-pill{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600}
+.type-phone{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.type-acc{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber)}
+
+/* ── ADMIN PANEL ── */
+.admin-section{margin-bottom:1.5rem}
+.admin-section-title{font-size:15px;font-weight:600;font-family:'Syne',sans-serif;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.agents-table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.slab-editor{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.slab-editor-title{font-size:14px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.slab-row{display:grid;grid-template-columns:auto 1fr 1fr 1fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+.slab-row label{font-size:11px;color:var(--text3)}
+.slab-row input{background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:1.75rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:18px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:1.25rem}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:1.25rem}
+
+/* ── ACC SLAB EDITOR ── */
+.acc-cat-block{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px}
+.acc-cat-title{font-size:12px;font-weight:600;color:var(--amber);text-transform:uppercase;margin-bottom:8px}
+.acc-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;margin-bottom:6px}
+.acc-row input{background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:12px 18px;font-size:13px;z-index:300;opacity:0;transform:translateY(10px);transition:all .2s;max-width:320px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:var(--green-border);background:var(--green-bg);color:var(--green)}
+.toast.error{border-color:var(--red-border);background:var(--red-bg);color:var(--red)}
+
+/* ── LOADING ── */
+.loading-overlay{position:fixed;inset:0;background:rgba(10,10,15,.85);display:none;align-items:center;justify-content:center;z-index:400;flex-direction:column;gap:14px}
+.loading-overlay.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.loading-text{font-size:14px;color:var(--text2)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .slab-section{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .fields-grid{grid-template-columns:repeat(3,1fr)}
+  .topbar{padding:0 1rem}
+  .main{padding:1rem}
+}
+
+/* ── SETUP SCREEN ── */
+.setup-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.setup-card h3{font-size:15px;font-weight:600;font-family:'Syne',sans-serif;margin-bottom:.75rem}
+.setup-url-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:.75rem}
+.setup-url-input:focus{outline:none;border-color:var(--accent)}
+.step-list{list-style:none;counter-reset:steps}
+.step-list li{counter-increment:steps;display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.step-list li:last-child{border-bottom:none}
+.step-list li::before{content:counter(steps);width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:#fff;line-height:24px;text-align:center}
+.step-text{font-size:13px;color:var(--text2);line-height:1.6}
+.step-text code{background:var(--bg4);padding:1px 6px;border-radius:4px;color:var(--accent2);font-family:monospace;font-size:12px}
+</style>
+</head>
+<body>
+
+<!-- ══ LOADING ══ -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Loading...</div>
+</div>
+
+<!-- ══ SETUP SCREEN ══ -->
+<div id="setupScreen">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem">
+    <div style="width:100%;max-width:560px">
+      <div style="text-align:center;margin-bottom:2rem">
+        <h1 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700">📱 Manohar <span style="color:var(--accent2)">Mobiles</span></h1>
+        <p style="color:var(--text2);margin-top:6px">Incentive Tracker — First time setup</p>
+      </div>
+      <div class="setup-card">
+        <h3>Step 1: Google Apps Script Deploy karo</h3>
+        <ol class="step-list">
+          <li><div class="step-text">Apni Google Sheet kholo aur <code>Extensions &gt; Apps Script</code> click karo</div></li>
+          <li><div class="step-text"><code>Code.gs</code> file ka sara content delete karke download ki hui <strong>Code.gs</strong> file ka content paste karo</div></li>
+          <li><div class="step-text"><code>setAdminPassword()</code> function run karo ek baar (apna admin password set karne ke liye — default: <code>manohar2025</code>)</div></li>
+          <li><div class="step-text"><code>initSheets()</code> function run karo — ye saari required sheets automatically bana dega</div></li>
+          <li><div class="step-text"><code>Deploy &gt; New Deployment</code> &gt; Type: <code>Web App</code> &gt; Execute as: <strong>Me</strong> &gt; Who can access: <strong>Anyone</strong> &gt; Deploy</div></li>
+          <li><div class="step-text">Deploy hone ke baad <strong>Web App URL</strong> copy karo (looks like: <code>https://script.google.com/macros/s/AKfy.../exec</code>)</div></li>
+        </ol>
+      </div>
+      <div class="setup-card">
+        <h3>Step 2: URL yahan paste karo</h3>
+        <input class="setup-url-input" id="setupUrl" placeholder="https://script.google.com/macros/s/.../exec" type="url"/>
+        <button class="btn btn-accent" style="width:100%;padding:13px;font-size:15px;font-family:'Syne',sans-serif;font-weight:600" onclick="saveSetup()">Connect &amp; Start ↗</button>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:1rem">URL aapki browser mein locally save hogi — koi server nahi, data seedha Google Sheet mein</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div class="login-screen hidden" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <h1>📱 Manohar <span>Mobiles</span></h1>
+      <p>Incentive Tracker — Login karo</p>
+    </div>
+    <div id="loginError" class="error-msg hidden"></div>
+    <div class="field">
+      <label>Agent ID</label>
+      <input id="loginId" placeholder="e.g. AGT001 ya ADMIN" autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-submit" onclick="doLogin()">Login →</button>
+    <p style="text-align:center;margin-top:1rem;font-size:12px;color:var(--text3)">
+      <span style="cursor:pointer;color:var(--accent2)" onclick="showSetup()">⚙ Change API URL</span>
+    </p>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div class="app hidden" id="mainApp">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">📱 Manohar <span>Mobiles</span></div>
+      <div class="agent-badge" id="agentBadge"></div>
+    </div>
+    <div class="topbar-right">
+      <select class="month-select" id="monthSelect" onchange="onMonthChange()"></select>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Agent View -->
+    <div id="agentView">
+      <div class="tabs">
+        <button class="tab active" onclick="switchAgentTab('dashboard')">📊 Dashboard</button>
+        <button class="tab" onclick="switchAgentTab('upload')">📤 Upload</button>
+        <button class="tab" onclick="switchAgentTab('log')">📋 Log</button>
+      </div>
+
+      <!-- DASHBOARD TAB -->
+      <div id="tab-dashboard">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="slab-section" id="slabSection"></div>
+        <div id="breakdownSection"></div>
+      </div>
+
+      <!-- UPLOAD TAB -->
+      <div id="tab-upload" class="hidden">
+        <div class="upload-card" id="phoneUploadCard">
+          <div class="upload-title">📱 Phone Sales — Aaj ke numbers <span class="badge">C1 to C7</span></div>
+          <div class="fields-grid">
+            <div class="input-group"><label>OPPO</label><input type="number" id="u_OPPO" min="0" value="0"/></div>
+            <div class="input-group"><label>VIVO</label><input type="number" id="u_VIVO" min="0" value="0"/></div>
+            <div class="input-group"><label>Samsung</label><input type="number" id="u_SAM" min="0" value="0"/></div>
+            <div class="input-group"><label>Apple</label><input type="number" id="u_APPLE" min="0" value="0"/></div>
+            <div class="input-group"><label>Realme</label><input type="number" id="u_REALME" min="0" value="0"/></div>
+            <div class="input-group"><label>Others</label><input type="number" id="u_OTHERS" min="0" value="0"/></div>
+            <div class="input-group"><label>Qualify</label><input type="number" id="u_QUALIFY" min="0" value="0"/></div>
+            <div class="input-group"><label>Final C1</label><input type="number" id="u_FINAL_C1" min="0" value="0"/></div>
+            <div class="input-group"><label>TKMN/Moto</label><input type="number" id="u_TKMN_MOTO" min="0" value="0"/></div>
+            <div class="input-group"><label>ASP &gt;50K</label><input type="number" id="u_ASP_ABOVE50K" min="0" value="0"/></div>
+            <div class="input-group"><label>L-A-T</label><input type="number" id="u_LAT" min="0" value="0"/></div>
+            <div class="input-group"><label>Watch (M1)</label><input type="number" id="u_WATCH_M1" min="0" value="0"/></div>
+            <div class="input-group"><label>Card Offer</label><input type="number" id="u_CARD_OFFER" min="0" value="0"/></div>
+            <div class="input-group"><label>Insurance</label><input type="number" id="u_INSURANCE" min="0" value="0"/></div>
+          </div>
+          <div class="submit-row">
+            <button class="submit-btn" onclick="submitData('PHONE')">💾 Phone Data Save Karo</button>
+            <span class="today-note" id="phoneSubmitNote"></span>
+          </div>
+        </div>
+
+        <div class="upload-card" id="accUploadCard">
+          <div class="upload-title">🎧 Accessories — Aaj ke numbers <span class="badge" style="background:var(--amber-bg);border-color:var(--amber-border);color:var(--amber)">C1 to C8</span></div>
+          <div class="fields-grid">
+            <div class="input-group"><label>ACC Semi</label><input type="number" id="u_ACC_SEMI" min="0" value="0"/></div>
+            <div class="input-group"><label>ACC Brand</label><input type="number" id="u_ACC_BRAND" min="0" value="0"/></div>
+            <div class="input-group"><label>Guard Cover</label><input type="number" id="u_GUARD_COVER" min="0" value="0"/></div>
+            <div class="input-group"><label>Repair</label><input type="number" id="u_REPAIR" min="0" value="0"/></div>
+            <div class="input-group"><label>Watch</label><input type="number" id="u_WATCH_M2" min="0" value="0"/></div>
+            <div class="input-group"><label>Used</label><input type="number" id="u_USED" min="0" value="0"/></div>
+            <div class="input-group"><label>Keypad</label><input type="number" id="u_KEYPAD" min="0" value="0"/></div>
+            <div class="input-group"><label>SIM</label><input type="number" id="u_SIM" min="0" value="0"/></div>
+          </div>
+          <div class="submit-row">
+            <button class="submit-btn" style="background:#d97706" onclick="submitData('ACC')">💾 Accessories Data Save Karo</button>
+            <span class="today-note" id="accSubmitNote"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOG TAB -->
+      <div id="tab-log" class="hidden">
+        <div class="log-card">
+          <div class="log-header">
+            <h3>Daily Achievement Log</h3>
+            <span style="font-size:12px;color:var(--text3)" id="logMonthLabel"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Date</th><th>Type</th>
+                <th>OPPO</th><th>VIVO</th><th>SAM</th><th>APPLE</th><th>REALME</th><th>OTHERS</th>
+                <th>TKMN</th><th>Watch</th><th>Card</th><th>Ins.</th>
+                <th>Acc Semi</th><th>Brand</th><th>Guard</th><th>Repair</th><th>Used</th><th>Keypad</th><th>SIM</th>
+              </tr></thead>
+              <tbody id="logTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin View -->
+    <div id="adminView" class="hidden">
+      <div class="tabs">
+        <button class="tab active" onclick="switchAdminTab('summary')">📊 Summary</button>
+        <button class="tab" onclick="switchAdminTab('agents')">👥 Agents</button>
+        <button class="tab" onclick="switchAdminTab('slabs')">🏆 Slabs</button>
+      </div>
+
+      <!-- SUMMARY TAB -->
+      <div id="atab-summary">
+        <div class="log-card">
+          <div class="log-header">
+            <h3>Monthly Summary — All Agents</h3>
+            <button class="btn btn-ghost btn-sm" onclick="loadAdminSummary()">🔄 Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Agent</th><th>Type</th><th>Phone Sales</th><th>Acc Sales</th>
+                <th>Phone Incentive</th><th>Total Incentive</th><th>Slab</th>
+              </tr></thead>
+              <tbody id="adminSummaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENTS TAB -->
+      <div id="atab-agents" class="hidden">
+        <div class="admin-section">
+          <div class="admin-section-title">
+            Agents
+            <button class="btn btn-accent btn-sm" onclick="openAddAgentModal()">+ Agent Add Karo</button>
+          </div>
+          <div class="agents-table-wrap">
+            <table>
+              <thead><tr><th>Agent ID</th><th>Name</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="agentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLABS TAB -->
+      <div id="atab-slabs" class="hidden">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:1rem">
+          <div style="flex:1">
+            <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Month select karo (format: May-2025)</label>
+            <input id="slabMonthInput" class="setup-url-input" style="margin:0" placeholder="e.g. Jun-2025" value=""/>
+          </div>
+          <button class="btn btn-accent" style="margin-top:20px" onclick="loadSlabEditor()">Load Slabs</button>
+        </div>
+
+        <!-- Phone Slabs Editor -->
+        <div class="slab-editor">
+          <div class="slab-editor-title">📱 Phone Sales Slabs (M1) <button class="btn btn-sm btn-green" onclick="addPhoneSlabRow()">+ Row</button></div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Slab Name | Min Qty | Bonus | C1 Amount</div>
+          <div id="phoneSlabRows"></div>
+          <button class="btn btn-accent btn-sm" style="margin-top:10px" onclick="savePhoneSlabs()">💾 Phone Slabs Save Karo</button>
+        </div>
+
+        <!-- Acc Slabs Editor -->
+        <div class="slab-editor" style="border-top:3px solid var(--acc-color)">
+          <div class="slab-editor-title">🎧 Accessories Slabs (M2) <button class="btn btn-sm btn-amber" onclick="addAccSlabRow()">+ Row</button></div>
+          <div id="accSlabCats"></div>
+          <button class="btn btn-amber btn-sm" style="margin-top:10px" onclick="saveAccSlabs()">💾 Acc Slabs Save Karo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+<div class="modal-bg" id="addAgentModal">
+  <div class="modal">
+    <h2>Naya Agent Add Karo</h2>
+    <div class="field"><label>Agent ID</label><input id="m_agentId" placeholder="e.g. AGT001"/></div>
+    <div class="field"><label>Name</label><input id="m_name" placeholder="Agent ka naam"/></div>
+    <div class="field"><label>Password</label><input id="m_pass" type="password" placeholder="Password set karo"/></div>
+    <div class="field"><label>Type</label>
+      <select id="m_type">
+        <option value="BOTH">Both (Phone + Accessories)</option>
+        <option value="PHONE">Sirf Phone Sales</option>
+        <option value="ACC">Sirf Accessories</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('addAgentModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="addAgent()">Add Karo ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="editAgentModal">
+  <div class="modal">
+    <h2>Agent Edit Karo</h2>
+    <input type="hidden" id="edit_agentId"/>
+    <div class="field"><label>Name</label><input id="edit_name" placeholder="Naam"/></div>
+    <div class="field"><label>Naya Password (optional)</label><input id="edit_pass" type="password" placeholder="Khali chodo agar change nahi karna"/></div>
+    <div class="field"><label>Type</label>
+      <select id="edit_type">
+        <option value="BOTH">Both</option><option value="PHONE">Phone Only</option><option value="ACC">Acc Only</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('editAgentModal')">Cancel</button>
+      <button class="btn btn-red btn-sm" onclick="deactivateAgent()">Deactivate</button>
+      <button class="btn btn-accent" onclick="saveEditAgent()">Save ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const LS_URL  = 'mm_api_url';
+const LS_AUTH = 'mm_auth';
+let API_URL   = localStorage.getItem(LS_URL)||'';
+let currentAgent = null;
+let currentData  = null;
+let adminPass    = '';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ── INIT ──────────────────────────────────────────────────────
+window.onload = () => {
+  if (!API_URL) { show('setupScreen'); return; }
+  const saved = localStorage.getItem(LS_AUTH);
+  if (saved) {
+    try { currentAgent = JSON.parse(saved); showMainApp(); }
+    catch { show('loginScreen'); }
+  } else { show('loginScreen'); }
+  buildMonthSelect();
+};
+
+function buildMonthSelect() {
+  const sel = document.getElementById('monthSelect');
+  sel.innerHTML = '';
+  const now = new Date();
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const label = MONTHS[d.getMonth()]+'-'+d.getFullYear();
+    sel.innerHTML += `<option value="${label}" ${i===0?'selected':''}>${label}</option>`;
+  }
+}
+
+function getCurrentMonth() {
+  return document.getElementById('monthSelect')?.value || '';
+}
+
+// ── SETUP ─────────────────────────────────────────────────────
+function saveSetup() {
+  const url = document.getElementById('setupUrl').value.trim();
+  if (!url.includes('script.google.com')) { toast('Valid Apps Script URL paste karo', 'error'); return; }
+  API_URL = url;
+  localStorage.setItem(LS_URL, url);
+  show('loginScreen');
+}
+function showSetup() { show('setupScreen'); }
+
+// ── LOGIN ─────────────────────────────────────────────────────
+async function doLogin() {
+  const id   = document.getElementById('loginId').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!id || !pass) { showLoginError('ID aur password dono bharein'); return; }
+  loading(true, 'Login ho raha hai...');
+  try {
+    const res = await api({action:'login', agentId:id, password:pass});
+    if (res.success) {
+      currentAgent = res.agent;
+      if (currentAgent.isAdmin) adminPass = pass;
+      localStorage.setItem(LS_AUTH, JSON.stringify(currentAgent));
+      hideLoginError();
+      showMainApp();
+    } else { showLoginError(res.error||'Login fail'); }
+  } catch(e) { showLoginError('Server se connect nahi ho paya. URL check karo.'); }
+  loading(false);
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg; el.classList.remove('hidden');
+}
+function hideLoginError() { document.getElementById('loginError').classList.add('hidden'); }
+
+function doLogout() {
+  currentAgent = null; currentData = null;
+  localStorage.removeItem(LS_AUTH);
+  show('loginScreen');
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPass').value='';
+}
+
+// ── MAIN APP ──────────────────────────────────────────────────
+function showMainApp() {
+  show('mainApp');
+  document.getElementById('agentBadge').textContent = currentAgent.name;
+  if (currentAgent.isAdmin) {
+    document.getElementById('agentView').classList.add('hidden');
+    document.getElementById('adminView').classList.remove('hidden');
+    loadAdminSummary();
+    loadAgents();
+  } else {
+    loadAgentDashboard();
+  }
+}
+
+async function loadAgentDashboard() {
+  loading(true, 'Data load ho raha hai...');
+  try {
+    const month = getCurrentMonth();
+    const res = await api({action:'getAgentData', agentId:currentAgent.agentId, month});
+    currentData = res;
+    renderDashboard(res);
+    renderLog(res);
+    document.getElementById('logMonthLabel').textContent = month;
+    prefillToday(res);
+  } catch(e) { toast('Data load nahi hua: '+e.message, 'error'); }
+  loading(false);
+}
+
+function onMonthChange() { if(currentAgent && !currentAgent.isAdmin) loadAgentDashboard(); else loadAdminSummary(); }
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDashboard(data) {
+  const pt = data.phoneTotals, at = data.accTotals;
+  const phoneTotal = data.phoneTotal;
+  const ps = data.phoneSlabInfo, as = data.accSlabInfo;
+
+  // Stats
+  const phoneIncentive = ps.current ? ps.current.c1Amount : 0;
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="s-label">Phone Sales Total</div><div class="s-val green-val">${phoneTotal}</div><div class="s-sub">OPPO+VIVO+SAM+Apple+Realme+Others</div></div>
+    <div class="stat-card"><div class="s-label">Current Slab</div><div class="s-val blue-val">${ps.current ? ps.current.slabName : '—'}</div><div class="s-sub">${ps.current ? `Min ${ps.current.minQty} units` : 'Koi slab nahi'}</div></div>
+    <div class="stat-card"><div class="s-label">Phone Incentive</div><div class="s-val amber-val">₹${phoneIncentive.toLocaleString('en-IN')}</div><div class="s-sub">C1 based amount</div></div>
+    <div class="stat-card"><div class="s-label">Next Slab Mein</div><div class="s-val purple-val">${ps.gap > 0 ? ps.gap : '✓'}</div><div class="s-sub">${ps.gap > 0 ? `units aur chahiye` : 'Top slab par ho!'}</div></div>
+  `;
+
+  // Phone Slab Card
+  const slabPct = ps.current ? Math.min(100, Math.round(phoneTotal / (ps.next?.minQty || ps.current?.minQty || 1) * 100)) : Math.min(100, Math.round(phoneTotal / (ps.next?.minQty||1)*100));
+  const fillCls = slabPct>=100?'fill-green':slabPct>=60?'fill-amber':'fill-red';
+
+  let phoneSlabHtml = `<div class="slab-card phone-slab">
+    <div class="slab-header">
+      <div><div class="slab-type phone">📱 Phone Sales — M1</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${getCurrentMonth()}</div></div>
+      <span class="slab-badge ${ps.current?'slab-achieved':'slab-none'}">${ps.current?ps.current.slabName:'No Slab'}</span>
+    </div>
+    <div class="slab-name">${phoneTotal} units</div>
+    <div class="slab-amount">Incentive: <span>₹${phoneIncentive.toLocaleString('en-IN')}</span></div>
+    <div class="progress-bar"><div class="progress-fill ${fillCls}" style="width:${slabPct}%"></div></div>
+    <div class="slab-gap">${ps.gap>0?`Next slab ke liye <strong>${ps.gap} aur units</strong> chahiye (${ps.next?.slabName})`:'🎉 Highest slab achieve kar li!'}</div>`;
+
+  if (data.slabsM1.length > 0) {
+    phoneSlabHtml += `<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Slab Structure</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:6px">
+        ${data.slabsM1.map(s=>`<div style="background:${phoneTotal>=s.minQty?'var(--green-bg)':'var(--bg4)'};border:1px solid ${phoneTotal>=s.minQty?'var(--green-border)':'var(--border)'};border-radius:8px;padding:8px;text-align:center">
+          <div style="font-size:11px;color:${phoneTotal>=s.minQty?'var(--green)':'var(--text3)'};font-weight:600">${s.slabName}</div>
+          <div style="font-size:13px;font-weight:700;color:${phoneTotal>=s.minQty?'var(--green)':'var(--text2)'};margin:2px 0">${s.minQty}+</div>
+          <div style="font-size:11px;color:var(--text3)">₹${Number(s.c1Amount).toLocaleString('en-IN')}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  phoneSlabHtml += '</div>';
+
+  // Acc Slab Card
+  const accCatNames = {C1_ACC_SEMI:'ACC Semi',C2_ACC_BRAND:'ACC Brand',C3_GUARD_COVER:'Guard Cover',C4_REPAIR:'Repair',C5_WATCH:'Watch',C6_USED:'Used',C7_KEYPAD:'Keypad',C8_SIM:'SIM'};
+  const accFieldMap = {C1_ACC_SEMI:'ACC_SEMI',C2_ACC_BRAND:'ACC_BRAND',C3_GUARD_COVER:'GUARD_COVER',C4_REPAIR:'REPAIR',C5_WATCH:'WATCH_M2',C6_USED:'USED',C7_KEYPAD:'KEYPAD',C8_SIM:'SIM'};
+  let totalAccIncentive = 0;
+  let accCatsHtml = '';
+  for (const cat in as) {
+    const c = as[cat];
+    const earned = c.achieved ? c.achieved.amount : 0;
+    totalAccIncentive += earned;
+    const pct = c.next ? Math.min(100,Math.round(c.qty/c.next.minQty*100)) : (c.achieved?100:0);
+    accCatsHtml += `<div style="background:${c.achieved?'var(--amber-bg)':'var(--bg4)'};border:1px solid ${c.achieved?'var(--amber-border)':'var(--border)'};border-radius:8px;padding:8px">
+      <div style="font-size:11px;color:${c.achieved?'var(--amber)':'var(--text3)'};font-weight:600">${accCatNames[cat]||cat}</div>
+      <div style="font-size:14px;font-weight:700;color:${c.achieved?'var(--amber)':'var(--text2)'};margin:2px 0">${c.qty} <span style="font-size:10px;font-weight:400">units</span></div>
+      <div style="font-size:11px;color:${c.achieved?'var(--green)':'var(--text3)'}">₹${earned.toLocaleString('en-IN')}</div>
+      <div style="height:4px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${c.achieved?'var(--amber)':'var(--border2)'};border-radius:2px"></div></div>
+      ${c.gap>0?`<div style="font-size:10px;color:var(--text3);margin-top:3px">${c.gap} aur</div>`:''}
+    </div>`;
+  }
+
+  let accSlabHtml = `<div class="slab-card acc-slab">
+    <div class="slab-header">
+      <div><div class="slab-type acc">🎧 Accessories — M2</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${getCurrentMonth()}</div></div>
+    </div>
+    <div class="slab-name">₹${totalAccIncentive.toLocaleString('en-IN')}</div>
+    <div class="slab-amount" style="color:var(--text2)">Total Accessories Incentive</div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px">${accCatsHtml}</div>
+  </div>`;
+
+  document.getElementById('slabSection').innerHTML = phoneSlabHtml + accSlabHtml;
+
+  // Category breakdown
+  document.getElementById('breakdownSection').innerHTML = `
+    <div class="breakdown-card">
+      <div class="breakdown-title"><div class="dot" style="background:var(--phone-color)"></div>Phone Sales — Category wise totals</div>
+      <div class="cat-grid">
+        ${[['OPPO',pt.OPPO],['VIVO',pt.VIVO],['SAM',pt.SAM],['APPLE',pt.APPLE],['REALME',pt.REALME],['OTHERS',pt.OTHERS],['TKMN/Moto',pt.TKMN_MOTO],['ASP >50K',pt.ASP_ABOVE50K],['L-A-T',pt.LAT],['Watch',pt.WATCH_M1],['Card Offer',pt.CARD_OFFER],['Insurance',pt.INSURANCE]].map(([n,v])=>`
+          <div class="cat-item ${v>0?'achieved':''}">
+            <div class="c-name">${n}</div>
+            <div class="c-val">${v}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="breakdown-card">
+      <div class="breakdown-title"><div class="dot" style="background:var(--acc-color)"></div>Accessories — Category wise totals</div>
+      <div class="cat-grid">
+        ${[['ACC Semi',at.ACC_SEMI],['ACC Brand',at.ACC_BRAND],['Guard Cover',at.GUARD_COVER],['Repair',at.REPAIR],['Watch',at.WATCH_M2],['Used',at.USED],['Keypad',at.KEYPAD],['SIM',at.SIM]].map(([n,v])=>`
+          <div class="cat-item ${v>0?'achieved':''}">
+            <div class="c-name">${n}</div>
+            <div class="c-val">${v}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── UPLOAD ────────────────────────────────────────────────────
+function prefillToday(data) {
+  const today = new Date().toISOString().split('T')[0];
+  const todayRow = data.dailyRows.find(r => r.date === today);
+  if (todayRow) {
+    const p = todayRow.phone, a = todayRow.acc;
+    if (p) { ['OPPO','VIVO','SAM','APPLE','REALME','OTHERS'].forEach(k => { const el=document.getElementById('u_'+k); if(el) el.value=p[k.toLowerCase()]||0; }); }
+    ['QUALIFY','FINAL_C1','TKMN_MOTO','ASP_ABOVE50K','LAT','WATCH_M1','CARD_OFFER','INSURANCE'].forEach(k => { const el=document.getElementById('u_'+k); if(el && todayRow.phone) el.value=0; });
+    if (a) {
+      const map = {ACC_SEMI:'semi',ACC_BRAND:'brand',GUARD_COVER:'guard',REPAIR:'repair',WATCH_M2:'watch',USED:'used',KEYPAD:'keypad',SIM:'sim'};
+      for(const k in map){const el=document.getElementById('u_'+k);if(el)el.value=a[map[k]]||0;}
+    }
+    document.getElementById('phoneSubmitNote').textContent = '✏️ Aaj ka data already hai — update hoga';
+    document.getElementById('accSubmitNote').textContent   = '✏️ Aaj ka data already hai — update hoga';
+  }
+}
+
+async function submitData(type) {
+  const month = getCurrentMonth();
+  const sales = {};
+  const fields = type==='PHONE'
+    ? ['OPPO','VIVO','SAM','APPLE','REALME','OTHERS','QUALIFY','FINAL_C1','TKMN_MOTO','ASP_ABOVE50K','LAT','WATCH_M1','CARD_OFFER','INSURANCE']
+    : ['ACC_SEMI','ACC_BRAND','GUARD_COVER','REPAIR','WATCH_M2','USED','KEYPAD','SIM'];
+  fields.forEach(f => { const el=document.getElementById('u_'+f); if(el) sales[f]=parseInt(el.value)||0; });
+  loading(true, 'Data save ho raha hai...');
+  try {
+    const res = await apiPost({action:'submitDaily', agentId:currentAgent.agentId, agentName:currentAgent.name, type, month, sales, notes:''});
+    if (res.success) { toast(res.message, 'success'); await loadAgentDashboard(); switchAgentTab('dashboard'); }
+    else toast(res.error, 'error');
+  } catch(e) { toast('Save nahi hua: '+e.message, 'error'); }
+  loading(false);
+}
+
+// ── LOG TABLE ─────────────────────────────────────────────────
+function renderLog(data) {
+  const rows = data.dailyRows;
+  const body = document.getElementById('logTableBody');
+  if (!rows.length) { body.innerHTML = '<tr><td colspan="19" style="text-align:center;color:var(--text3);padding:2rem">Koi data nahi is month</td></tr>'; return; }
+  body.innerHTML = rows.map(r => `<tr>
+    <td>${r.date}</td>
+    <td><span class="type-pill ${r.type==='PHONE'?'type-phone':'type-acc'}">${r.type}</span></td>
+    <td>${r.phone?.oppo||0}</td><td>${r.phone?.vivo||0}</td><td>${r.phone?.sam||0}</td><td>${r.phone?.apple||0}</td><td>${r.phone?.realme||0}</td><td>${r.phone?.others||0}</td>
+    <td>${r.phone?.tkmn||0}</td><td>${r.phone?.watch||0}</td><td>${r.phone?.card||0}</td><td>${r.phone?.ins||0}</td>
+    <td>${r.acc?.semi||0}</td><td>${r.acc?.brand||0}</td><td>${r.acc?.guard||0}</td><td>${r.acc?.repair||0}</td><td>${r.acc?.used||0}</td><td>${r.acc?.keypad||0}</td><td>${r.acc?.sim||0}</td>
+  </tr>`).join('');
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────
+async function loadAdminSummary() {
+  loading(true,'Summary load ho rahi hai...');
+  try {
+    const month = getCurrentMonth();
+    const res = await api({action:'getMonthSummary', month, adminPass});
+    if (!res.success) { toast(res.error,'error'); loading(false); return; }
+    const body = document.getElementById('adminSummaryBody');
+    if (!res.rows.length) { body.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:2rem">Koi data nahi</td></tr>'; loading(false); return; }
+    body.innerHTML = res.rows.map(r=>`<tr>
+      <td style="font-weight:500">${r.name}</td>
+      <td><span class="type-pill ${r.type==='PHONE'?'type-phone':'type-acc'}">${r.type}</span></td>
+      <td>${r.phoneSales}</td><td>${r.accSales}</td>
+      <td style="color:var(--green)">₹${Number(r.phoneIncentive||0).toLocaleString('en-IN')}</td>
+      <td style="color:var(--amber);font-weight:600">₹${Number(r.total||0).toLocaleString('en-IN')}</td>
+      <td><span style="background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue);padding:2px 8px;border-radius:5px;font-size:12px">${r.slab||'—'}</span></td>
+    </tr>`).join('');
+  } catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+async function loadAgents() {
+  loading(true,'Agents load ho rahe hain...');
+  try {
+    const res = await api({action:'getAllAgents', adminPass});
+    if (!res.success){toast(res.error,'error');loading(false);return;}
+    const body = document.getElementById('agentsTableBody');
+    body.innerHTML = res.agents.map(a=>`<tr>
+      <td style="font-family:monospace;color:var(--accent2)">${a.agentId}</td>
+      <td style="font-weight:500">${a.name}</td>
+      <td>${a.type}</td>
+      <td><span style="padding:2px 8px;border-radius:5px;font-size:11px;background:${a.active?'var(--green-bg)':'var(--red-bg)'};border:1px solid ${a.active?'var(--green-border)':'var(--red-border)'};color:${a.active?'var(--green)':'var(--red)'}">${a.active?'Active':'Inactive'}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openEditAgent('${a.agentId}','${a.name}','${a.type}')">Edit</button></td>
+    </tr>`).join('');
+  } catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+function openAddAgentModal(){document.getElementById('addAgentModal').classList.add('open');}
+function openEditAgent(id,name,type){
+  document.getElementById('edit_agentId').value=id;
+  document.getElementById('edit_name').value=name;
+  document.getElementById('edit_type').value=type;
+  document.getElementById('edit_pass').value='';
+  document.getElementById('editAgentModal').classList.add('open');
+}
+
+async function addAgent(){
+  const data={action:'addAgent',adminPass,agentId:document.getElementById('m_agentId').value.trim(),name:document.getElementById('m_name').value.trim(),password:document.getElementById('m_pass').value.trim(),agentType:document.getElementById('m_type').value};
+  if(!data.agentId||!data.name||!data.password){toast('Sab fields fill karo','error');return;}
+  loading(true,'Agent add ho raha hai...');
+  try{const res=await apiPost(data);if(res.success){toast(res.message,'success');closeModal('addAgentModal');loadAgents();}else toast(res.error,'error');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+async function saveEditAgent(){
+  const data={action:'updateAgent',adminPass,agentId:document.getElementById('edit_agentId').value,name:document.getElementById('edit_name').value.trim(),agentType:document.getElementById('edit_type').value};
+  const pass=document.getElementById('edit_pass').value.trim();
+  if(pass)data.password=pass;
+  loading(true);
+  try{const res=await apiPost(data);if(res.success){toast(res.message,'success');closeModal('editAgentModal');loadAgents();}else toast(res.error,'error');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+async function deactivateAgent(){
+  if(!confirm('Is agent ko deactivate karna chahte ho?'))return;
+  const data={action:'deleteAgent',adminPass,agentId:document.getElementById('edit_agentId').value};
+  loading(true);
+  try{const res=await apiPost(data);if(res.success){toast(res.message,'success');closeModal('editAgentModal');loadAgents();}else toast(res.error,'error');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+// ── SLAB EDITOR ───────────────────────────────────────────────
+let phoneSlabData = [], accSlabData = [];
+
+async function loadSlabEditor(){
+  const month = document.getElementById('slabMonthInput').value.trim();
+  if(!month){toast('Month daalo pehle (e.g. Jun-2025)','error');return;}
+  loading(true,'Slabs load ho rahe hain...');
+  try{
+    const [m1,m2]=await Promise.all([api({action:'getSlabs',type:'PHONE'}),api({action:'getSlabs',type:'ACC'})]);
+    phoneSlabData = m1.slabs?.filter(s=>s.month===month)||[];
+    accSlabData   = m2.slabs?.filter(s=>s.month===month)||[];
+    renderPhoneSlabEditor();
+    renderAccSlabEditor();
+  }catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+function renderPhoneSlabEditor(){
+  const wrap=document.getElementById('phoneSlabRows');
+  wrap.innerHTML=phoneSlabData.map((s,i)=>`
+    <div class="slab-row" id="psr_${i}">
+      <span style="font-size:12px;color:var(--text3)">Slab ${i+1}</span>
+      <div><label>Name</label><input value="${s.slabName}" onchange="phoneSlabData[${i}].slabName=this.value" placeholder="Slab 1"/></div>
+      <div><label>Min Qty</label><input type="number" value="${s.minQty}" onchange="phoneSlabData[${i}].minQty=+this.value" placeholder="70"/></div>
+      <div><label>Bonus</label><input type="number" value="${s.bonus}" onchange="phoneSlabData[${i}].bonus=+this.value" placeholder="5"/></div>
+      <div><label>C1 Amount</label><input type="number" value="${s.c1Amount}" onchange="phoneSlabData[${i}].c1Amount=+this.value" placeholder="3750"/></div>
+      <button class="btn btn-red btn-sm" onclick="phoneSlabData.splice(${i},1);renderPhoneSlabEditor()">✕</button>
+    </div>`).join('');
+}
+
+function addPhoneSlabRow(){
+  phoneSlabData.push({slabName:'Naya Slab',minQty:0,bonus:0,c1Amount:0,targets:{}});
+  renderPhoneSlabEditor();
+}
+
+async function savePhoneSlabs(){
+  const month=document.getElementById('slabMonthInput').value.trim();
+  if(!month){toast('Month daalo','error');return;}
+  loading(true,'Phone slabs save ho rahe hain...');
+  try{const res=await apiPost({action:'updateSlabs',adminPass,slabType:'PHONE',month,slabs:phoneSlabData});if(res.success)toast(res.message,'success');else toast(res.error,'error');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+const ACC_CATS=['C1_ACC_SEMI','C2_ACC_BRAND','C3_GUARD_COVER','C4_REPAIR','C5_WATCH','C6_USED','C7_KEYPAD','C8_SIM'];
+const ACC_LABELS={C1_ACC_SEMI:'C1 — ACC Semi Branded',C2_ACC_BRAND:'C2 — ACC Branded',C3_GUARD_COVER:'C3 — Guard Cover',C4_REPAIR:'C4 — Repair',C5_WATCH:'C5 — Watch',C6_USED:'C6 — Used',C7_KEYPAD:'C7 — Keypad',C8_SIM:'C8 — SIM'};
+
+function renderAccSlabEditor(){
+  const wrap=document.getElementById('accSlabCats');
+  wrap.innerHTML=ACC_CATS.map(cat=>{
+    const rows=accSlabData.filter(s=>s.category===cat);
+    return`<div class="acc-cat-block">
+      <div class="acc-cat-title">${ACC_LABELS[cat]||cat}</div>
+      <div id="acc_rows_${cat}">
+        ${rows.map((r,i)=>`<div class="acc-row">
+          <div><label style="font-size:11px;color:var(--text3)">Min Qty</label><input type="number" value="${r.minQty}" onchange="updateAccSlab('${cat}',${i},'minQty',+this.value)"/></div>
+          <div><label style="font-size:11px;color:var(--text3)">Amount ₹</label><input type="number" value="${r.amount}" onchange="updateAccSlab('${cat}',${i},'amount',+this.value)"/></div>
+          <button class="btn btn-red btn-sm" onclick="removeAccRow('${cat}',${i})">✕</button>
+        </div>`).join('')}
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="addAccRow('${cat}')">+ Row</button>
+    </div>`;
+  }).join('');
+}
+
+function updateAccSlab(cat,idx,field,val){const rows=accSlabData.filter(s=>s.category===cat);if(rows[idx])rows[idx][field]=val;}
+function addAccRow(cat){accSlabData.push({category:cat,minQty:0,amount:0});renderAccSlabEditor();}
+function removeAccRow(cat,idx){const rows=accSlabData.filter(s=>s.category===cat);const globalIdx=accSlabData.indexOf(rows[idx]);if(globalIdx>-1)accSlabData.splice(globalIdx,1);renderAccSlabEditor();}
+
+async function saveAccSlabs(){
+  const month=document.getElementById('slabMonthInput').value.trim();
+  if(!month){toast('Month daalo','error');return;}
+  loading(true,'Acc slabs save ho rahe hain...');
+  try{const res=await apiPost({action:'updateSlabs',adminPass,slabType:'ACC',month,slabs:accSlabData});if(res.success)toast(res.message,'success');else toast(res.error,'error');}
+  catch(e){toast('Error: '+e.message,'error');}
+  loading(false);
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchAgentTab(tab){
+  ['dashboard','upload','log'].forEach((t,i)=>{
+    document.getElementById('tab-'+t).classList.toggle('hidden',t!==tab);
+    document.querySelectorAll('#agentView .tab')[i]?.classList.toggle('active',t===tab);
+  });
+}
+function switchAdminTab(tab){
+  ['summary','agents','slabs'].forEach((t,i)=>{
+    document.getElementById('atab-'+t).classList.toggle('hidden',t!==tab);
+    document.querySelectorAll('#adminView .tab')[i]?.classList.toggle('active',t===tab);
+  });
+  if(tab==='slabs'){document.getElementById('slabMonthInput').value=getCurrentMonth();}
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function show(id){['setupScreen','loginScreen','mainApp'].forEach(s=>document.getElementById(s).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function loading(on,msg=''){const el=document.getElementById('loadingOverlay');el.classList.toggle('show',on);if(msg)document.getElementById('loadingText').textContent=msg;}
+function toast(msg,type='success'){const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+type+' show';setTimeout(()=>el.classList.remove('show'),3000);}
+
+async function api(params){
+  const url=new URL(API_URL);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const res=await fetch(url.toString());
+  return res.json();
+}
+async function apiPost(data){
+  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  return res.json();
+}
+</script>
+</body>
+</html>
