@@ -474,7 +474,8 @@ tr:hover td{background:var(--bg3)}
 // ── CONFIG ────────────────────────────────────────────────────
 const LS_URL  = 'mm_api_url';
 const LS_AUTH = 'mm_auth';
-let API_URL   = localStorage.getItem(LS_URL)||'';
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbxdCAnjZM3abcT64Tzo8HVAr7wwPSQXL4kPltFEy6fYe6QsWGE8NgrJ7wE9MATSFTUrPA/exec';
+let API_URL   = localStorage.getItem(LS_URL) || DEFAULT_API_URL;
 let currentAgent = null;
 let currentData  = null;
 let adminPass    = '';
