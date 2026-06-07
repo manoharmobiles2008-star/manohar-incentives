@@ -904,7 +904,10 @@ async function api(params){
   return res.json();
 }
 async function apiPost(data){
-  const res=await fetch(API_URL,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  const url=new URL(API_URL);
+  url.searchParams.set('action', data.action);
+  url.searchParams.set('data', encodeURIComponent(JSON.stringify(data)));
+  const res=await fetch(url.toString());
   return res.json();
 }
 </script>
